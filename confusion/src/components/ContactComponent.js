@@ -30,6 +30,7 @@ class Contact extends Component {
       contactType: "Tel.",
       message: "",
     };
+
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
