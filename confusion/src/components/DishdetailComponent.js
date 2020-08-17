@@ -29,7 +29,7 @@ class CommentForm extends Component {
     };
 
     this.toggleModal = this.toggleModal.bind(this);
-    this.validate = this.validate.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   toggleModal() {
@@ -38,15 +38,23 @@ class CommentForm extends Component {
     });
   }
 
-  validate() {}
+  handleSubmit(values) {
+    this.toggleModal();
+    this.props.addComment(
+      this.props.dishId,
+      values.rating,
+      values.yourname,
+      values.comment
+    );
+  }
 
   render() {
     return (
       <div>
-        <Modal isOpen={this.state.isModalOpen}>
+        <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
           <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
           <ModalBody>
-            <LocalForm>
+            <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
               <Row className="form-group">
                 <Label htmlFor="rating" md={12}>
                   Rating
@@ -55,6 +63,7 @@ class CommentForm extends Component {
                   <Control.select
                     model=".rating"
                     name="rating"
+                    id="rating"
                     className="form-control"
                   >
                     <option>1</option>
@@ -98,14 +107,14 @@ class CommentForm extends Component {
                 </Col>
               </Row>
               <Row className="form-group">
-                <Label htmlFor=".comments" md={12}>
+                <Label htmlFor=".comment" md={12}>
                   Comment
                 </Label>
                 <Col md={12}>
                   <Control.textarea
-                    model=".comments"
-                    name="comments"
-                    id="comments"
+                    model=".comment"
+                    name="comment"
+                    id="comment"
                     rows="6"
                     className="form-control"
                   />
@@ -143,7 +152,7 @@ function RenderDish({ dish }) {
   );
 }
 
-function RenderComments({ comments }) {
+function RenderComments({ comments, addComment, dishId }) {
   if (comments != null) {
     const commentListItems = comments.map((comment) => {
       return (
@@ -165,15 +174,11 @@ function RenderComments({ comments }) {
       <div className="col-12 col-md-5 m-1">
         <h4>Comments</h4>
         <ul className="list-unstyled">{commentListItems}</ul>
-        <CommentForm />
+        <CommentForm dishId={dishId} addComment={addComment} />
       </div>
     );
   } else {
-    return (
-      <div>
-        <CommentForm />
-      </div>
-    );
+    return <div></div>;
   }
 }
 
@@ -195,7 +200,11 @@ const DishDetail = (props) => {
         </div>
         <div className="row">
           <RenderDish dish={props.dish} />
-          <RenderComments comments={props.comments} />
+          <RenderComments
+            comments={props.comments}
+            addComment={props.addComment}
+            dishId={props.dish.id}
+          />
         </div>
       </div>
     );
